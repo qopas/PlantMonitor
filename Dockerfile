@@ -6,20 +6,20 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Copy project files in dependency order (for better Docker layer caching)
-COPY ["src/PlantMonitor.Domain/PlantMonitor.Domain.csproj", "src/PlantMonitor.Domain/"]
-COPY ["src/PlantMonitor.Application/PlantMonitor.Application.csproj", "src/PlantMonitor.Application/"]
-COPY ["src/PlantMonitor.Infrastructure/PlantMonitor.Infrastructure.csproj", "src/PlantMonitor.Infrastructure/"]
-COPY ["src/PlantMonitor.Api/PlantMonitor.Api.csproj", "src/PlantMonitor.Api/"]
+# Copy project files - Updated for your actual structure
+COPY ["PlantMonitor.Domain/PlantMonitor.Domain.csproj", "PlantMonitor.Domain/"]
+COPY ["PlantMonitor.Application/PlantMonitor.Application.csproj", "PlantMonitor.Application/"]
+COPY ["PlantMonitor.Infrastructure/PlantMonitor.Infrastructure.csproj", "PlantMonitor.Infrastructure/"]
+COPY ["PlantMonitor.Api/PlantMonitor.Api.csproj", "PlantMonitor.Api/"]
 
 # Restore dependencies
-RUN dotnet restore "src/PlantMonitor.Api/PlantMonitor.Api.csproj"
+RUN dotnet restore "PlantMonitor.Api/PlantMonitor.Api.csproj"
 
 # Copy all source code
 COPY . .
 
 # Build the application
-WORKDIR "/src/src/PlantMonitor.Api"
+WORKDIR "/src/PlantMonitor.Api"
 RUN dotnet build "PlantMonitor.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
@@ -33,7 +33,7 @@ COPY --from=publish /app/publish .
 RUN adduser --disabled-password --gecos '' appuser && chown -R appuser /app
 USER appuser
 
-# Configure environment for Railway/production
+# Configure environment for Railway
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 
