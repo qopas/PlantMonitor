@@ -24,7 +24,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-// Configure Swagger - enable in development or when explicitly enabled
+// 🔧 FIXED: Make Swagger conditional for Railway
 var enableSwagger = builder.Configuration.GetValue<bool>("ApiSettings:EnableSwagger", 
     builder.Environment.IsDevelopment());
 
@@ -44,7 +44,7 @@ if (enableSwagger)
             }
         });
 
-        // Include XML comments if available
+        // Include XML comments
         var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
         var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
         if (File.Exists(xmlPath))
@@ -65,7 +65,7 @@ if (enableSwagger)
         // Add API Key authentication for devices
         c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
         {
-            Description = "API Key for device authentication. Use X-API-Key header.",
+            Description = "API Key for device authentication. Use X-API-Key header or apiKey query parameter.",
             Name = "X-API-Key",
             In = ParameterLocation.Header,
             Type = SecuritySchemeType.ApiKey
@@ -88,37 +88,24 @@ if (enableSwagger)
     });
 }
 
-// Configure CORS - use configuration from appsettings
-var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() 
-    ?? new[] { "*" };
-
+// Add CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactNativeApp", policy =>
     {
-        if (allowedOrigins.Contains("*"))
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader();
-        }
-        else
-        {
-            policy.WithOrigins(allowedOrigins)
-                  .AllowAnyMethod()
-                  .AllowAnyHeader()
-                  .AllowCredentials();
-        }
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
 
-// Configure Railway port binding - IMPORTANT for deployment
+// 🔧 CRITICAL: Add Railway port configuration
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 builder.WebHost.UseUrls($"http://*:{port}");
 
 var app = builder.Build();
 
-// Initialize database with proper error handling for Railway
+// 🔧 FIXED: Database initialization with Railway error handling
 try
 {
     using var scope = app.Services.CreateScope();
@@ -128,7 +115,7 @@ try
 catch (Exception ex)
 {
     Log.Fatal(ex, "An error occurred while initializing the database");
-    // In production, we might want to continue running and let health checks fail
+    // Don't crash in production, let Railway handle restarts
     if (app.Environment.IsDevelopment())
     {
         throw;
@@ -148,23 +135,11 @@ if (enableSwagger)
     });
 }
 
-// Security headers for production
-app.Use(async (context, next) =>
-{
-    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-    context.Response.Headers.Add("X-Frame-Options", "DENY");
-    context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
-    context.Response.Headers.Add("Referrer-Policy", "strict-origin-when-cross-origin");
-    await next();
-});
-
-// Use HTTPS redirection only in production (Railway handles SSL termination)
+// 🔧 FIXED: Only use HTTPS redirect in production
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
-
-app.UseSerilogRequestLogging();
 
 app.UseCors("AllowReactNativeApp");
 
@@ -177,7 +152,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Health check endpoint for Railway
+// 🔧 ADD: Health check for Railway
 app.MapGet("/health", () => new
 {
     status = "healthy",
@@ -186,7 +161,7 @@ app.MapGet("/health", () => new
     environment = app.Environment.EnvironmentName
 });
 
-// Main status endpoint
+// Add a simple status endpoint
 app.MapGet("/", () => new
 {
     service = "Plant Monitor API",
@@ -203,7 +178,7 @@ app.MapGet("/", () => new
     }
 });
 
-// Version endpoint with Railway-specific info
+// Add version endpoint
 app.MapGet("/version", () => new
 {
     version = "1.0.0",
@@ -211,13 +186,7 @@ app.MapGet("/version", () => new
     commit = Environment.GetEnvironmentVariable("GIT_COMMIT") ?? 
              Environment.GetEnvironmentVariable("RAILWAY_GIT_COMMIT_SHA")?.Substring(0, 7) ?? "local",
     environment = app.Environment.EnvironmentName,
-    port = port,
-    railway = new
-    {
-        deploymentId = Environment.GetEnvironmentVariable("RAILWAY_DEPLOYMENT_ID"),
-        serviceId = Environment.GetEnvironmentVariable("RAILWAY_SERVICE_ID"),
-        projectId = Environment.GetEnvironmentVariable("RAILWAY_PROJECT_ID")
-    }
+    port = port
 });
 
 try
