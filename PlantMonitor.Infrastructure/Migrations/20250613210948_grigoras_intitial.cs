@@ -1,12 +1,13 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace PlantMonitor.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class grigoras_initial : Migration
+    public partial class grigoras_intitial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,10 +17,10 @@ namespace PlantMonitor.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -31,29 +32,29 @@ namespace PlantMonitor.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    TimeZone = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "UTC"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FirstName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    LastName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    TimeZone = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false, defaultValue: "UTC"),
                     NotificationPreferences = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "{}"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastLogin = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    LastLogin = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,11 +65,11 @@ namespace PlantMonitor.Infrastructure.Migrations
                 name: "RoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     RoleId = table.Column<long>(type: "bigint", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -86,20 +87,20 @@ namespace PlantMonitor.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DeviceId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    DeviceId = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
-                    DeviceName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    DeviceType = table.Column<int>(type: "int", nullable: false),
-                    FirmwareVersion = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    MacAddress = table.Column<string>(type: "nvarchar(17)", maxLength: 17, nullable: true),
-                    WifiSSID = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    LastSeen = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsOnline = table.Column<bool>(type: "bit", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DeviceName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    DeviceType = table.Column<int>(type: "integer", nullable: false),
+                    FirmwareVersion = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    MacAddress = table.Column<string>(type: "character varying(17)", maxLength: 17, nullable: true),
+                    WifiSSID = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    LastSeen = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsOnline = table.Column<bool>(type: "boolean", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Location = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -116,11 +117,11 @@ namespace PlantMonitor.Infrastructure.Migrations
                 name: "UserClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -137,9 +138,9 @@ namespace PlantMonitor.Infrastructure.Migrations
                 name: "UserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    ProviderKey = table.Column<string>(type: "text", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -182,9 +183,9 @@ namespace PlantMonitor.Infrastructure.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<long>(type: "bigint", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Value = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -202,16 +203,16 @@ namespace PlantMonitor.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     DeviceId = table.Column<long>(type: "bigint", nullable: false),
-                    TokenHash = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    TokenName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastUsedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    TokenHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    TokenName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastUsedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     Scopes = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "{}"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -229,20 +230,20 @@ namespace PlantMonitor.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     DeviceId = table.Column<long>(type: "bigint", nullable: false),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
-                    AvgSoilMoisture = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    MinSoilMoisture = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    MaxSoilMoisture = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    AvgWaterLevel = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    MinWaterLevel = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    WateringCount = table.Column<int>(type: "int", nullable: false),
-                    TotalWateringDuration = table.Column<int>(type: "int", nullable: false),
-                    EstimatedWaterUsed = table.Column<int>(type: "int", nullable: false),
-                    DataPointsCount = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    AvgSoilMoisture = table.Column<decimal>(type: "numeric", nullable: true),
+                    MinSoilMoisture = table.Column<decimal>(type: "numeric", nullable: true),
+                    MaxSoilMoisture = table.Column<decimal>(type: "numeric", nullable: true),
+                    AvgWaterLevel = table.Column<decimal>(type: "numeric", nullable: true),
+                    MinWaterLevel = table.Column<decimal>(type: "numeric", nullable: true),
+                    WateringCount = table.Column<int>(type: "integer", nullable: false),
+                    TotalWateringDuration = table.Column<int>(type: "integer", nullable: false),
+                    EstimatedWaterUsed = table.Column<int>(type: "integer", nullable: false),
+                    DataPointsCount = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -260,18 +261,18 @@ namespace PlantMonitor.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     DeviceId = table.Column<long>(type: "bigint", nullable: false),
-                    AlertType = table.Column<int>(type: "int", nullable: false),
-                    Severity = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Message = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    IsResolved = table.Column<bool>(type: "bit", nullable: false),
-                    ResolvedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AlertType = table.Column<int>(type: "integer", nullable: false),
+                    Severity = table.Column<int>(type: "integer", nullable: false),
+                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Message = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    IsResolved = table.Column<bool>(type: "boolean", nullable: false),
+                    ResolvedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ResolvedBy = table.Column<long>(type: "bigint", nullable: true),
                     Metadata = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "{}"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -295,14 +296,14 @@ namespace PlantMonitor.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     DeviceId = table.Column<long>(type: "bigint", nullable: false),
-                    ConfigKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ConfigValue = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    ConfigKey = table.Column<string>(type: "text", nullable: false),
+                    ConfigValue = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -320,19 +321,19 @@ namespace PlantMonitor.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
                     DeviceId = table.Column<long>(type: "bigint", nullable: true),
-                    NotificationType = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsRead = table.Column<bool>(type: "bit", nullable: false),
-                    IsSent = table.Column<bool>(type: "bit", nullable: false),
-                    SentVia = table.Column<int>(type: "int", nullable: true),
-                    Metadata = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ReadAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    NotificationType = table.Column<int>(type: "integer", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Message = table.Column<string>(type: "text", nullable: false),
+                    IsRead = table.Column<bool>(type: "boolean", nullable: false),
+                    IsSent = table.Column<bool>(type: "boolean", nullable: false),
+                    SentVia = table.Column<int>(type: "integer", nullable: true),
+                    Metadata = table.Column<string>(type: "text", nullable: false),
+                    ReadAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -355,20 +356,20 @@ namespace PlantMonitor.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     DeviceId = table.Column<long>(type: "bigint", nullable: false),
-                    PlantName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    PlantType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    PlantSpecies = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    AgeWeeks = table.Column<int>(type: "int", nullable: true),
-                    MoistureThresholdLow = table.Column<int>(type: "int", nullable: false),
-                    MoistureThresholdHigh = table.Column<int>(type: "int", nullable: false),
-                    WateringDuration = table.Column<int>(type: "int", nullable: false),
-                    AutoWateringEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    PlantImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Notes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    PlantName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    PlantType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    PlantSpecies = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    AgeWeeks = table.Column<int>(type: "integer", nullable: true),
+                    MoistureThresholdLow = table.Column<int>(type: "integer", nullable: false),
+                    MoistureThresholdHigh = table.Column<int>(type: "integer", nullable: false),
+                    WateringDuration = table.Column<int>(type: "integer", nullable: false),
+                    AutoWateringEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    PlantImageUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    Notes = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -386,19 +387,19 @@ namespace PlantMonitor.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     DeviceId = table.Column<long>(type: "bigint", nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SoilMoisture = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
-                    WaterLevel = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
-                    SoilMoistureRaw = table.Column<int>(type: "int", nullable: true),
-                    WaterLevelRaw = table.Column<int>(type: "int", nullable: true),
-                    Temperature = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
-                    Humidity = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
-                    LightLevel = table.Column<int>(type: "int", nullable: true),
-                    IsValid = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    SoilMoisture = table.Column<decimal>(type: "numeric(5,2)", nullable: false),
+                    WaterLevel = table.Column<decimal>(type: "numeric(5,2)", nullable: false),
+                    SoilMoistureRaw = table.Column<int>(type: "integer", nullable: true),
+                    WaterLevelRaw = table.Column<int>(type: "integer", nullable: true),
+                    Temperature = table.Column<decimal>(type: "numeric(5,2)", nullable: true),
+                    Humidity = table.Column<decimal>(type: "numeric(5,2)", nullable: true),
+                    LightLevel = table.Column<int>(type: "integer", nullable: true),
+                    IsValid = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -416,16 +417,16 @@ namespace PlantMonitor.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     DeviceId = table.Column<long>(type: "bigint", nullable: true),
-                    LogLevel = table.Column<int>(type: "int", nullable: false),
-                    Component = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EventType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Metadata = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    LogLevel = table.Column<int>(type: "integer", nullable: false),
+                    Component = table.Column<string>(type: "text", nullable: true),
+                    EventType = table.Column<string>(type: "text", nullable: true),
+                    Message = table.Column<string>(type: "text", nullable: false),
+                    Metadata = table.Column<string>(type: "text", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -442,17 +443,17 @@ namespace PlantMonitor.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     PlantId = table.Column<long>(type: "bigint", nullable: false),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
-                    HealthScore = table.Column<int>(type: "int", nullable: false),
-                    MoistureScore = table.Column<int>(type: "int", nullable: true),
-                    WateringEfficiencyScore = table.Column<int>(type: "int", nullable: true),
-                    ConsistencyScore = table.Column<int>(type: "int", nullable: true),
-                    Factors = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Recommendations = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    HealthScore = table.Column<int>(type: "integer", nullable: false),
+                    MoistureScore = table.Column<int>(type: "integer", nullable: true),
+                    WateringEfficiencyScore = table.Column<int>(type: "integer", nullable: true),
+                    ConsistencyScore = table.Column<int>(type: "integer", nullable: true),
+                    Factors = table.Column<string>(type: "text", nullable: false),
+                    Recommendations = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -470,22 +471,22 @@ namespace PlantMonitor.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     DeviceId = table.Column<long>(type: "bigint", nullable: false),
                     PlantId = table.Column<long>(type: "bigint", nullable: true),
-                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TriggerType = table.Column<int>(type: "int", nullable: false),
-                    SoilMoistureBefore = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
-                    SoilMoistureAfter = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
-                    WaterLevelBefore = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
-                    WaterLevelAfter = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
-                    DurationSeconds = table.Column<int>(type: "int", nullable: false),
-                    WaterAmountMl = table.Column<int>(type: "int", nullable: true),
-                    WasSuccessful = table.Column<bool>(type: "bit", nullable: false),
-                    FailureReason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Notes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    TriggerType = table.Column<int>(type: "integer", nullable: false),
+                    SoilMoistureBefore = table.Column<decimal>(type: "numeric(5,2)", nullable: true),
+                    SoilMoistureAfter = table.Column<decimal>(type: "numeric(5,2)", nullable: true),
+                    WaterLevelBefore = table.Column<decimal>(type: "numeric(5,2)", nullable: true),
+                    WaterLevelAfter = table.Column<decimal>(type: "numeric(5,2)", nullable: true),
+                    DurationSeconds = table.Column<int>(type: "integer", nullable: false),
+                    WaterAmountMl = table.Column<int>(type: "integer", nullable: true),
+                    WasSuccessful = table.Column<bool>(type: "boolean", nullable: false),
+                    FailureReason = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    Notes = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -581,8 +582,7 @@ namespace PlantMonitor.Infrastructure.Migrations
                 name: "RoleNameIndex",
                 table: "Roles",
                 column: "NormalizedName",
-                unique: true,
-                filter: "[NormalizedName] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_SensorData_DeviceId_Timestamp",
@@ -623,15 +623,13 @@ namespace PlantMonitor.Infrastructure.Migrations
                 name: "IX_Users_Email",
                 table: "Users",
                 column: "Email",
-                unique: true,
-                filter: "[Email] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "Users",
                 column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_WateringEvents_DeviceId_Timestamp",
