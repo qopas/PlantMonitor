@@ -18,17 +18,15 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
+        var connectionString = BuildConnectionString() 
                             ?? configuration.GetConnectionString("DefaultConnection");
-        
-        Console.WriteLine($"DATABASE_URL env var: {Environment.GetEnvironmentVariable("DATABASE_URL")?.Substring(0, Math.Min(20, Environment.GetEnvironmentVariable("DATABASE_URL")?.Length ?? 0))}...");
-        Console.WriteLine($"Config connection string: {configuration.GetConnectionString("DefaultConnection")?.Substring(0, Math.Min(20, configuration.GetConnectionString("DefaultConnection")?.Length ?? 0))}...");
-        Console.WriteLine($"Final connection string length: {connectionString?.Length ?? 0}");
         
         if (string.IsNullOrEmpty(connectionString))
         {
             throw new InvalidOperationException("Database connection string is not configured");
         }
+
+        Console.WriteLine($"Using connection string with host: {ExtractHost(connectionString)}");
 
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(connectionString, npgsqlOptions =>
@@ -150,5 +148,32 @@ public static class DependencyInjection
             await userManager.CreateAsync(adminUser, "Admin123!");
             await userManager.AddToRoleAsync(adminUser, "Admin");
         }
+    }
+
+    private static string? BuildConnectionString()
+    {
+        var host = Environment.GetEnvironmentVariable("PGHOST");
+        var port = Environment.GetEnvironmentVariable("PGPORT");
+        var database = Environment.GetEnvironmentVariable("PGDATABASE");
+        var username = Environment.GetEnvironmentVariable("PGUSER");
+        var password = Environment.GetEnvironmentVariable("PGPASSWORD");
+
+        if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(database) || 
+            string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        {
+            return null;
+        }
+
+        return $"Host={host};Port={port ?? "5432"};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+    }
+
+    private static string ExtractHost(string connectionString)
+    {
+        if (connectionString.Contains("Host="))
+        {
+            var hostPart = connectionString.Split(';').FirstOrDefault(s => s.StartsWith("Host="));
+            return hostPart?.Replace("Host=", "") ?? "unknown";
+        }
+        return "parsed-from-url";
     }
 }
