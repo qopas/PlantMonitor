@@ -99,13 +99,11 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 🔧 CRITICAL: Add Railway port configuration
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 builder.WebHost.UseUrls($"http://*:{port}");
 
 var app = builder.Build();
 
-// 🔧 FIXED: Database initialization with Railway error handling
 try
 {
     using var scope = app.Services.CreateScope();
@@ -115,7 +113,6 @@ try
 catch (Exception ex)
 {
     Log.Fatal(ex, "An error occurred while initializing the database");
-    // Don't crash in production, let Railway handle restarts
     if (app.Environment.IsDevelopment())
     {
         throw;

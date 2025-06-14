@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,8 +10,6 @@ using PlantMonitor.Domain.Entities;
 using PlantMonitor.Infrastructure.Authentication;
 using PlantMonitor.Infrastructure.Data;
 using PlantMonitor.Infrastructure.Services;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Serilog;
 
 namespace PlantMonitor.Infrastructure;
@@ -18,12 +18,23 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
+                            ?? configuration.GetConnectionString("DefaultConnection");
+        
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new InvalidOperationException("Database connection string is not configured");
+        }
+
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(connectionString, npgsqlOptions =>
+            {
+                npgsqlOptions.CommandTimeout(configuration.GetValue<int>("Database:CommandTimeout", 30));
+                npgsqlOptions.EnableRetryOnFailure(configuration.GetValue<int>("Database:MaxRetryCount", 3));
+            }));
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
-        // Identity
         services.AddIdentity<User, IdentityRole<long>>(options =>
         {
             options.Password.RequireDigit = true;
@@ -36,8 +47,23 @@ public static class DependencyInjection
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
 
-        // JWT Authentication
-        var jwtSettings = configuration.GetSection("JwtSettings");
+        var jwtKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY") 
+                  ?? configuration["JwtSettings:SecretKey"] 
+                  ?? configuration["Jwt:Key"];
+
+        var jwtIssuer = Environment.GetEnvironmentVariable("API_BASE_URL")
+                     ?? configuration["JwtSettings:Issuer"] 
+                     ?? configuration["Jwt:Issuer"];
+
+        var jwtAudience = Environment.GetEnvironmentVariable("API_BASE_URL")
+                       ?? configuration["JwtSettings:Audience"] 
+                       ?? configuration["Jwt:Audience"];
+
+        if (string.IsNullOrEmpty(jwtKey))
+        {
+            throw new InvalidOperationException("JWT SecretKey not configured");
+        }
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -51,13 +77,12 @@ public static class DependencyInjection
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtSettings["Issuer"],
-                ValidAudience = jwtSettings["Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not configured")))
+                ValidIssuer = jwtIssuer,
+                ValidAudience = jwtAudience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
             };
         });
 
-        // Redis Cache
         var redisConnectionString = configuration.GetConnectionString("Redis");
         if (!string.IsNullOrEmpty(redisConnectionString))
         {
@@ -72,7 +97,6 @@ public static class DependencyInjection
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<JwtTokenService>();
 
-        // Logging
         services.AddLogging(builder =>
         {
             builder.AddSerilog();
@@ -88,7 +112,6 @@ public static class DependencyInjection
         
         await context.Database.MigrateAsync();
         
-        // Seed initial data if needed
         await SeedDataAsync(scope.ServiceProvider);
     }
 
@@ -97,7 +120,6 @@ public static class DependencyInjection
         var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole<long>>>();
 
-        // Create default roles
         var roles = new[] { "Admin", "User" };
         foreach (var role in roles)
         {
@@ -107,7 +129,6 @@ public static class DependencyInjection
             }
         }
 
-        // Create default admin user
         var adminEmail = "admin@plantmonitor.com";
         var adminUser = await userManager.FindByEmailAsync(adminEmail);
         
