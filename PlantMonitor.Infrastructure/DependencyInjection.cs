@@ -21,6 +21,10 @@ public static class DependencyInjection
         var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
                             ?? configuration.GetConnectionString("DefaultConnection");
         
+        Console.WriteLine($"DATABASE_URL env var: {Environment.GetEnvironmentVariable("DATABASE_URL")?.Substring(0, Math.Min(20, Environment.GetEnvironmentVariable("DATABASE_URL")?.Length ?? 0))}...");
+        Console.WriteLine($"Config connection string: {configuration.GetConnectionString("DefaultConnection")?.Substring(0, Math.Min(20, configuration.GetConnectionString("DefaultConnection")?.Length ?? 0))}...");
+        Console.WriteLine($"Final connection string length: {connectionString?.Length ?? 0}");
+        
         if (string.IsNullOrEmpty(connectionString))
         {
             throw new InvalidOperationException("Database connection string is not configured");
