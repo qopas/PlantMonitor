@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace PlantMonitor.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class grigoras_intitial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -36,7 +36,7 @@ namespace PlantMonitor.Infrastructure.Migrations
                     FirstName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     LastName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     TimeZone = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false, defaultValue: "UTC"),
-                    NotificationPreferences = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "{}"),
+                    NotificationPreferences = table.Column<string>(type: "text", nullable: false, defaultValue: "{}"),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     LastLogin = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -210,7 +210,7 @@ namespace PlantMonitor.Infrastructure.Migrations
                     ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     LastUsedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    Scopes = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "{}"),
+                    Scopes = table.Column<string>(type: "text", nullable: false, defaultValue: "{}"),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -270,7 +270,7 @@ namespace PlantMonitor.Infrastructure.Migrations
                     IsResolved = table.Column<bool>(type: "boolean", nullable: false),
                     ResolvedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ResolvedBy = table.Column<long>(type: "bigint", nullable: true),
-                    Metadata = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "{}"),
+                    Metadata = table.Column<string>(type: "text", nullable: false, defaultValue: "{}"),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -298,9 +298,9 @@ namespace PlantMonitor.Infrastructure.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     DeviceId = table.Column<long>(type: "bigint", nullable: false),
-                    ConfigKey = table.Column<string>(type: "text", nullable: false),
+                    ConfigKey = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     ConfigValue = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -325,12 +325,12 @@ namespace PlantMonitor.Infrastructure.Migrations
                     UserId = table.Column<long>(type: "bigint", nullable: false),
                     DeviceId = table.Column<long>(type: "bigint", nullable: true),
                     NotificationType = table.Column<int>(type: "integer", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    Message = table.Column<string>(type: "text", nullable: false),
+                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Message = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     IsRead = table.Column<bool>(type: "boolean", nullable: false),
                     IsSent = table.Column<bool>(type: "boolean", nullable: false),
                     SentVia = table.Column<int>(type: "integer", nullable: true),
-                    Metadata = table.Column<string>(type: "text", nullable: false),
+                    Metadata = table.Column<string>(type: "text", nullable: false, defaultValue: "{}"),
                     ReadAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -342,7 +342,8 @@ namespace PlantMonitor.Infrastructure.Migrations
                         name: "FK_Notifications_Devices_DeviceId",
                         column: x => x.DeviceId,
                         principalTable: "Devices",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Notifications_Users_UserId",
                         column: x => x.UserId,
@@ -420,10 +421,10 @@ namespace PlantMonitor.Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     DeviceId = table.Column<long>(type: "bigint", nullable: true),
                     LogLevel = table.Column<int>(type: "integer", nullable: false),
-                    Component = table.Column<string>(type: "text", nullable: true),
-                    EventType = table.Column<string>(type: "text", nullable: true),
-                    Message = table.Column<string>(type: "text", nullable: false),
-                    Metadata = table.Column<string>(type: "text", nullable: false),
+                    Component = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    EventType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    Message = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
+                    Metadata = table.Column<string>(type: "text", nullable: false, defaultValue: "{}"),
                     Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -435,7 +436,8 @@ namespace PlantMonitor.Infrastructure.Migrations
                         name: "FK_SystemLogs_Devices_DeviceId",
                         column: x => x.DeviceId,
                         principalTable: "Devices",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -537,9 +539,9 @@ namespace PlantMonitor.Infrastructure.Migrations
                 column: "ResolvedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeviceConfigurations_DeviceId",
+                name: "IX_DeviceConfigurations_DeviceId_ConfigKey_IsActive",
                 table: "DeviceConfigurations",
-                column: "DeviceId");
+                columns: new[] { "DeviceId", "ConfigKey", "IsActive" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Devices_DeviceId",
@@ -553,14 +555,19 @@ namespace PlantMonitor.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Notifications_CreatedAt",
+                table: "Notifications",
+                column: "CreatedAt");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Notifications_DeviceId",
                 table: "Notifications",
                 column: "DeviceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notifications_UserId",
+                name: "IX_Notifications_UserId_IsRead",
                 table: "Notifications",
-                column: "UserId");
+                columns: new[] { "UserId", "IsRead" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlantHealthScores_PlantId",
@@ -595,9 +602,19 @@ namespace PlantMonitor.Infrastructure.Migrations
                 column: "Timestamp");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SystemLogs_DeviceId",
+                name: "IX_SystemLogs_DeviceId_Timestamp",
                 table: "SystemLogs",
-                column: "DeviceId");
+                columns: new[] { "DeviceId", "Timestamp" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SystemLogs_LogLevel",
+                table: "SystemLogs",
+                column: "LogLevel");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SystemLogs_Timestamp",
+                table: "SystemLogs",
+                column: "Timestamp");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserClaims_UserId",

@@ -241,11 +241,14 @@ namespace PlantMonitor.Infrastructure.Migrations
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("Metadata")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("{}");
 
                     b.Property<int>("NotificationType")
                         .HasColumnType("integer");
@@ -258,7 +261,8 @@ namespace PlantMonitor.Infrastructure.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -268,9 +272,11 @@ namespace PlantMonitor.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedAt");
+
                     b.HasIndex("DeviceId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "IsRead");
 
                     b.ToTable("Notifications");
                 });
@@ -301,7 +307,7 @@ namespace PlantMonitor.Infrastructure.Migrations
                     b.Property<string>("Scopes")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasDefaultValue("{}");
 
                     b.Property<string>("TokenHash")
@@ -408,7 +414,7 @@ namespace PlantMonitor.Infrastructure.Migrations
                     b.Property<string>("Metadata")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasDefaultValue("{}");
 
                     b.Property<DateTime?>("ResolvedAt")
@@ -449,7 +455,8 @@ namespace PlantMonitor.Infrastructure.Migrations
 
                     b.Property<string>("ConfigKey")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("ConfigValue")
                         .IsRequired()
@@ -459,7 +466,8 @@ namespace PlantMonitor.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<long>("DeviceId")
                         .HasColumnType("bigint");
@@ -472,7 +480,7 @@ namespace PlantMonitor.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeviceId");
+                    b.HasIndex("DeviceId", "ConfigKey", "IsActive");
 
                     b.ToTable("DeviceConfigurations");
                 });
@@ -647,7 +655,8 @@ namespace PlantMonitor.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Component")
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -656,18 +665,22 @@ namespace PlantMonitor.Infrastructure.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("EventType")
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<int>("LogLevel")
                         .HasColumnType("integer");
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<string>("Metadata")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("{}");
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("timestamp with time zone");
@@ -677,7 +690,11 @@ namespace PlantMonitor.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeviceId");
+                    b.HasIndex("LogLevel");
+
+                    b.HasIndex("Timestamp");
+
+                    b.HasIndex("DeviceId", "Timestamp");
 
                     b.ToTable("SystemLogs");
                 });
@@ -740,7 +757,7 @@ namespace PlantMonitor.Infrastructure.Migrations
                     b.Property<string>("NotificationPreferences")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasDefaultValue("{}");
 
                     b.Property<string>("PasswordHash")
@@ -919,7 +936,8 @@ namespace PlantMonitor.Infrastructure.Migrations
                 {
                     b.HasOne("Device", "Device")
                         .WithMany()
-                        .HasForeignKey("DeviceId");
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("PlantMonitor.Domain.Entities.User", "User")
                         .WithMany("Notifications")
@@ -1020,7 +1038,8 @@ namespace PlantMonitor.Infrastructure.Migrations
                 {
                     b.HasOne("Device", "Device")
                         .WithMany("SystemLogs")
-                        .HasForeignKey("DeviceId");
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Device");
                 });

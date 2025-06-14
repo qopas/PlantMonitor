@@ -21,7 +21,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasDefaultValue("UTC");
 
         builder.Property(u => u.NotificationPreferences)
-            .HasColumnType("nvarchar(max)")
+            .HasColumnType("text")
             .HasDefaultValue("{}");
 
         builder.HasIndex(u => u.Email)
@@ -60,7 +60,6 @@ public class DeviceConfiguration : IEntityTypeConfiguration<Device>
 
         builder.HasIndex(d => d.UserId);
 
-        // Relationships
         builder.HasOne(d => d.User)
             .WithMany(u => u.Devices)
             .HasForeignKey(d => d.UserId)
@@ -94,7 +93,6 @@ public class PlantConfiguration : IEntityTypeConfiguration<Plant>
         builder.HasIndex(p => p.DeviceId)
             .IsUnique();
 
-        // Relationships
         builder.HasOne(p => p.Device)
             .WithOne(d => d.Plant)
             .HasForeignKey<Plant>(p => p.DeviceId)
@@ -123,7 +121,6 @@ public class SensorDataConfiguration : IEntityTypeConfiguration<SensorData>
         builder.HasIndex(s => new { s.DeviceId, s.Timestamp });
         builder.HasIndex(s => s.Timestamp);
 
-        // Relationships
         builder.HasOne(s => s.Device)
             .WithMany(d => d.SensorData)
             .HasForeignKey(s => s.DeviceId)
@@ -158,7 +155,6 @@ public class WateringEventConfiguration : IEntityTypeConfiguration<WateringEvent
         builder.HasIndex(w => new { w.DeviceId, w.Timestamp });
         builder.HasIndex(w => w.Timestamp);
 
-        // Relationships
         builder.HasOne(w => w.Device)
             .WithMany(d => d.WateringEvents)
             .HasForeignKey(w => w.DeviceId)
@@ -186,13 +182,12 @@ public class DeviceAlertConfiguration : IEntityTypeConfiguration<DeviceAlert>
             .IsRequired();
 
         builder.Property(a => a.Metadata)
-            .HasColumnType("nvarchar(max)")
+            .HasColumnType("text")
             .HasDefaultValue("{}");
 
         builder.HasIndex(a => new { a.DeviceId, a.IsResolved });
         builder.HasIndex(a => a.CreatedAt);
 
-        // Relationships
         builder.HasOne(a => a.Device)
             .WithMany(d => d.DeviceAlerts)
             .HasForeignKey(a => a.DeviceId)
@@ -219,7 +214,7 @@ public class ApiTokenConfiguration : IEntityTypeConfiguration<ApiToken>
             .HasMaxLength(100);
 
         builder.Property(t => t.Scopes)
-            .HasColumnType("nvarchar(max)")
+            .HasColumnType("text")
             .HasDefaultValue("{}");
 
         builder.HasIndex(t => t.TokenHash)
@@ -227,10 +222,99 @@ public class ApiTokenConfiguration : IEntityTypeConfiguration<ApiToken>
 
         builder.HasIndex(t => new { t.DeviceId, t.IsActive });
 
-        // Relationships
         builder.HasOne(t => t.Device)
             .WithMany(d => d.ApiTokens)
             .HasForeignKey(t => t.DeviceId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
+{
+    public void Configure(EntityTypeBuilder<Notification> builder)
+    {
+        builder.HasKey(n => n.Id);
+
+        builder.Property(n => n.Title)
+            .HasMaxLength(200)
+            .IsRequired();
+
+        builder.Property(n => n.Message)
+            .HasMaxLength(1000)
+            .IsRequired();
+
+        builder.Property(n => n.Metadata)
+            .HasColumnType("text")
+            .HasDefaultValue("{}");
+
+        builder.HasIndex(n => new { n.UserId, n.IsRead });
+        builder.HasIndex(n => n.CreatedAt);
+
+        builder.HasOne(n => n.User)
+            .WithMany(u => u.Notifications)
+            .HasForeignKey(n => n.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(n => n.Device)
+            .WithMany()
+            .HasForeignKey(n => n.DeviceId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
+public class DeviceConfigurationEntityConfiguration : IEntityTypeConfiguration<PlantMonitor.Domain.Entities.DeviceConfiguration>
+{
+    public void Configure(EntityTypeBuilder<PlantMonitor.Domain.Entities.DeviceConfiguration> builder)
+    {
+        builder.HasKey(d => d.Id);
+
+        builder.Property(d => d.ConfigKey)
+            .HasMaxLength(100)
+            .IsRequired();
+
+        builder.Property(d => d.ConfigValue)
+            .HasColumnType("text")
+            .IsRequired();
+
+        builder.Property(d => d.Description)
+            .HasMaxLength(500);
+
+        builder.HasIndex(d => new { d.DeviceId, d.ConfigKey, d.IsActive });
+
+        builder.HasOne(d => d.Device)
+            .WithMany(dev => dev.DeviceConfigurations)
+            .HasForeignKey(d => d.DeviceId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public class SystemLogConfiguration : IEntityTypeConfiguration<SystemLog>
+{
+    public void Configure(EntityTypeBuilder<SystemLog> builder)
+    {
+        builder.HasKey(s => s.Id);
+
+        builder.Property(s => s.Component)
+            .HasMaxLength(100);
+
+        builder.Property(s => s.EventType)
+            .HasMaxLength(100);
+
+        builder.Property(s => s.Message)
+            .HasMaxLength(2000)
+            .IsRequired();
+
+        builder.Property(s => s.Metadata)
+            .HasColumnType("text")
+            .HasDefaultValue("{}");
+
+        builder.HasIndex(s => new { s.DeviceId, s.Timestamp });
+        builder.HasIndex(s => s.Timestamp);
+        builder.HasIndex(s => s.LogLevel);
+
+        builder.HasOne(s => s.Device)
+            .WithMany(d => d.SystemLogs)
+            .HasForeignKey(s => s.DeviceId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
