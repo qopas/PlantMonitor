@@ -213,7 +213,7 @@ public class UpdateDeviceHandler(
                 return ApiResponse<DeviceDto>.ErrorResult("Device not found");
             }
 
-            // Update fields if provided
+            
             if (!string.IsNullOrEmpty(request.DeviceName))
             {
                 device.DeviceName = request.DeviceName;

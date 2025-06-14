@@ -75,7 +75,7 @@ public class RecordSensorDataHandler : IRequestHandler<RecordSensorDataCommand, 
 
     private async Task CheckAndCreateAlerts(Device device, Domain.Entities.SensorData sensorData, CancellationToken cancellationToken)
     {
-        // Check for low water level
+        
         if (sensorData.WaterLevel < 15m)
         {
             var existingAlert = await _context.DeviceAlerts
@@ -99,7 +99,7 @@ public class RecordSensorDataHandler : IRequestHandler<RecordSensorDataCommand, 
             }
         }
 
-        // Check for critical soil moisture
+        
         if (device.Plant != null && sensorData.SoilMoisture < device.Plant.MoistureThresholdLow - 10)
         {
             var existingAlert = await _context.DeviceAlerts

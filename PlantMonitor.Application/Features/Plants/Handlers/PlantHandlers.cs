@@ -118,7 +118,7 @@ public class UpdatePlantHandler(
                 return ApiResponse<PlantDto>.ErrorResult("Plant not found");
             }
 
-            // Update fields if provided
+            
             if (!string.IsNullOrEmpty(request.PlantName))
             {
                 plant.PlantName = request.PlantName;

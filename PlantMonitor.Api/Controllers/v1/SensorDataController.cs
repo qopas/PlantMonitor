@@ -8,7 +8,7 @@ namespace PlantMonitor.Api.Controllers.v1;
 public class SensorDataController : BaseController
 {
     /// <summary>
-    /// Record sensor data from ESP32 device
+    
     /// </summary>
     [HttpPost]
     [AllowAnonymous] // Devices use API tokens

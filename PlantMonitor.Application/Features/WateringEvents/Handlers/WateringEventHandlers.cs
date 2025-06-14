@@ -166,16 +166,16 @@ public class TriggerWateringHandler : IRequestHandler<TriggerWateringCommand, Ap
                 return ApiResponse.ErrorResult("Device not found");
             }
 
-            // Check if device is online
+            
             if (!device.IsOnline)
             {
                 return ApiResponse.ErrorResult("Device is offline");
             }
 
-            // Get default duration from plant config or use provided duration
+            
             int duration = request.DurationSeconds ?? device.Plant?.WateringDuration ?? 10;
 
-            // Create a manual watering event
+            
             var wateringEvent = new WateringEvent
             {
                 DeviceId = device.Id,
