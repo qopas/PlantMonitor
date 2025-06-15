@@ -36,6 +36,7 @@ public static class DependencyInjection
             }));
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+        services.AddScoped<IDeviceProvisioningService, DeviceProvisioningService>();
 
         services.AddIdentity<User, IdentityRole<long>>(options =>
         {
@@ -95,9 +96,13 @@ public static class DependencyInjection
         }
         
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IDeviceProvisioningService, DeviceProvisioningService>();
         services.AddScoped<IDeviceTokenService, DeviceTokenService>();
+        services.AddScoped<IDeviceProvisioningService, DeviceProvisioningService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IDeviceProvisioningService, DeviceProvisioningService>();
         services.AddScoped<JwtTokenService>();
+        services.AddScoped<IDeviceProvisioningService, DeviceProvisioningService>();
 
         services.AddLogging(builder =>
         {

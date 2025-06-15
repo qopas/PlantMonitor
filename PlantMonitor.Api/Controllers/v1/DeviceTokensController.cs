@@ -4,13 +4,10 @@ using PlantMonitor.Application.Features.Auth.Commands;
 
 namespace PlantMonitor.Api.Controllers.v1;
 
-[Authorize]
 public class DeviceTokensController : BaseController
 {
-    /// <summary>
-    /// Generate API token for device
-    /// </summary>
     [HttpPost("generate")]
+    [Authorize(Roles = "Admin,Manufacturer")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GenerateToken([FromBody] GenerateTokenRequest request)
@@ -20,9 +17,6 @@ public class DeviceTokensController : BaseController
         return HandleResult(result);
     }
 
-    /// <summary>
-    /// Validate device token (used by devices)
-    /// </summary>
     [HttpPost("validate")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -33,6 +27,24 @@ public class DeviceTokensController : BaseController
         var result = await Mediator.Send(command);
         return HandleResult(result);
     }
+
+    [HttpPost("revoke")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequest request)
+    {
+        return Ok();
+    }
+
+    [HttpGet("device/{deviceId}")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetDeviceTokens(string deviceId)
+    {
+        return Ok();
+    }
 }
 
 public class GenerateTokenRequest
@@ -42,6 +54,12 @@ public class GenerateTokenRequest
 }
 
 public class ValidateTokenRequest
+{
+    public string Token { get; set; } = string.Empty;
+    public string DeviceId { get; set; } = string.Empty;
+}
+
+public class RevokeTokenRequest
 {
     public string Token { get; set; } = string.Empty;
     public string DeviceId { get; set; } = string.Empty;

@@ -6,7 +6,6 @@ using PlantMonitor.Application.Features.Devices.Queries;
 
 namespace PlantMonitor.Api.Controllers.v1;
 
-[Authorize]
 public class DevicesController : BaseController
 {
     private readonly ICurrentUserService _currentUserService;
@@ -16,10 +15,8 @@ public class DevicesController : BaseController
         _currentUserService = currentUserService;
     }
 
-    /// <summary>
-    /// Get all devices for the current user
-    /// </summary>
     [HttpGet]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetUserDevices()
@@ -34,10 +31,8 @@ public class DevicesController : BaseController
         return HandleResult(result);
     }
 
-    /// <summary>
-    /// Get device by device ID
-    /// </summary>
     [HttpGet("{deviceId}")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetDevice(string deviceId)
@@ -47,23 +42,26 @@ public class DevicesController : BaseController
         return HandleResult(result);
     }
 
-    /// <summary>
-    /// Register a new device
-    /// </summary>
     [HttpPost("register")]
+    [Authorize(Policy = "DeviceApiKey")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RegisterDevice([FromBody] RegisterDeviceRequest request)
     {
+        var authenticatedDeviceId = HttpContext.User.FindFirst("device_id")?.Value;
+        
+        if (string.IsNullOrEmpty(authenticatedDeviceId) || authenticatedDeviceId != request.DeviceId)
+        {
+            return BadRequest("Device ID mismatch with authentication token");
+        }
+
         var command = new RegisterDeviceCommand(request.DeviceId, request.UserEmail, request.DeviceName);
         var result = await Mediator.Send(command);
         return HandleResult(result);
     }
 
-    /// <summary>
-    /// Update device information
-    /// </summary>
     [HttpPut("{id:long}")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -74,29 +72,35 @@ public class DevicesController : BaseController
         return HandleResult(result);
     }
 
-    /// <summary>
-    /// Update device online status (for device heartbeat)
-    /// </summary>
     [HttpPost("{deviceId}/heartbeat")]
-    [AllowAnonymous] // Devices use API tokens
+    [Authorize(Policy = "DeviceApiKey")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeviceHeartbeat(string deviceId)
     {
+        var authenticatedDeviceId = HttpContext.User.FindFirst("device_id")?.Value;
+        if (authenticatedDeviceId != deviceId)
+        {
+            return Forbid("Device ID mismatch");
+        }
+
         var command = new UpdateDeviceStatusCommand(deviceId, true, DateTime.UtcNow);
         var result = await Mediator.Send(command);
         return HandleResult(result);
     }
 
-    /// <summary>
-    /// Get device configuration for ESP32
-    /// </summary>
     [HttpGet("{deviceId}/config")]
-    [AllowAnonymous] // Devices use API tokens
+    [Authorize(Policy = "DeviceApiKey")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetDeviceConfig(string deviceId)
     {
+        var authenticatedDeviceId = HttpContext.User.FindFirst("device_id")?.Value;
+        if (authenticatedDeviceId != deviceId)
+        {
+            return Forbid("Device ID mismatch");
+        }
+
         var query = new GetDeviceConfigQuery(deviceId);
         var result = await Mediator.Send(query);
         return HandleResult(result);

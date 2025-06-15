@@ -4,6 +4,8 @@ using PlantMonitor.Application;
 using PlantMonitor.Infrastructure;
 using Serilog;
 using System.Reflection;
+using Microsoft.AspNetCore.Authentication;
+using PlantMonitor.Infrastructure.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,18 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 // Add services to the container
+builder.Services.AddAuthentication("DeviceApiKey")
+    .AddScheme<AuthenticationSchemeOptions, DeviceApiKeyAuthenticationHandler>("DeviceApiKey", null);
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("DeviceApiKey", policy =>
+    {
+        policy.AuthenticationSchemes.Add("DeviceApiKey");
+        policy.RequireAuthenticatedUser();
+    });
+});
+
 builder.Services.AddControllers();
 
 // Add Application and Infrastructure layers
