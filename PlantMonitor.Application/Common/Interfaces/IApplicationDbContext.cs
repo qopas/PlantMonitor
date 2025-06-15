@@ -17,6 +17,7 @@ public interface IApplicationDbContext
     DbSet<PlantHealthScore> PlantHealthScores { get; }
     DbSet<ApiToken> ApiTokens { get; }
     DbSet<SystemLog> SystemLogs { get; }
+    DbSet<DeviceCommand> DeviceCommands { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

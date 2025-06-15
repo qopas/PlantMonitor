@@ -37,6 +37,7 @@ public static class DependencyInjection
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<IDeviceProvisioningService, DeviceProvisioningService>();
+        services.AddScoped<IDeviceCommandsService, DeviceCommandsService>();
 
         services.AddIdentity<User, IdentityRole<long>>(options =>
         {
@@ -96,13 +97,20 @@ public static class DependencyInjection
         }
         
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IDeviceCommandsService, DeviceCommandsService>();
         services.AddScoped<IDeviceProvisioningService, DeviceProvisioningService>();
+        services.AddScoped<IDeviceCommandsService, DeviceCommandsService>();
         services.AddScoped<IDeviceTokenService, DeviceTokenService>();
+        services.AddScoped<IDeviceCommandsService, DeviceCommandsService>();
         services.AddScoped<IDeviceProvisioningService, DeviceProvisioningService>();
+        services.AddScoped<IDeviceCommandsService, DeviceCommandsService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IDeviceCommandsService, DeviceCommandsService>();
         services.AddScoped<IDeviceProvisioningService, DeviceProvisioningService>();
+        services.AddScoped<IDeviceCommandsService, DeviceCommandsService>();
         services.AddScoped<JwtTokenService>();
         services.AddScoped<IDeviceProvisioningService, DeviceProvisioningService>();
+        services.AddScoped<IDeviceCommandsService, DeviceCommandsService>();
 
         services.AddLogging(builder =>
         {
@@ -182,3 +190,4 @@ public static class DependencyInjection
         return "parsed-from-url";
     }
 }
+

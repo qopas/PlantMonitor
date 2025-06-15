@@ -21,6 +21,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<PlantHealthScore> PlantHealthScores => Set<PlantHealthScore>();
     public DbSet<ApiToken> ApiTokens => Set<ApiToken>();
     public DbSet<SystemLog> SystemLogs => Set<SystemLog>();
+    public DbSet<DeviceCommand> DeviceCommands => Set<DeviceCommand>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -40,3 +41,4 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         modelBuilder.Entity<Microsoft.AspNetCore.Identity.IdentityRoleClaim<long>>().ToTable("RoleClaims");
     }
 }
+

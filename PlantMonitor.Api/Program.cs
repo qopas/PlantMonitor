@@ -6,6 +6,7 @@ using Serilog;
 using System.Reflection;
 using Microsoft.AspNetCore.Authentication;
 using PlantMonitor.Infrastructure.Authentication;
+using PlantMonitor.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -116,6 +117,8 @@ builder.Services.AddCors(options =>
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 builder.WebHost.UseUrls($"http://*:{port}");
 
+builder.Services.AddHostedService<CommandCleanupService>();
+
 var app = builder.Build();
 
 try
@@ -214,3 +217,4 @@ finally
 {
     Log.CloseAndFlush();
 }
+
